@@ -3,6 +3,9 @@ const chatForm = document.getElementById("chatForm");
 const userInput = document.getElementById("userInput");
 const chatWindow = document.getElementById("chatWindow");
 
+// Use your Cloudflare Worker URL so the client posts to the worker (no local key required)
+const CLOUD_WORKER_URL = "https://lorealchatbot.jalopezo.workers.dev/";
+
 // Initial L'Oréal assistant greeting (styled as an ai bubble)
 chatWindow.innerHTML = `<div class="msg ai"><div class="section">👋 Bonjour — I'm your L’Oréal Smart Product Advisor. Tell me about your skin, hair, or makeup goal and I’ll suggest products and a routine.</div></div>`;
 
@@ -49,26 +52,6 @@ chatForm.addEventListener("submit", async (e) => {
   appendMessage("user", `${escapeHtml(userText)}`);
   userInput.value = "";
 
-  // Ensure the global API key exists (secrets.js provides OPENAI_API_KEY)
-  if (
-    typeof OPENAI_API_KEY === "undefined" ||
-    !OPENAI_API_KEY ||
-    OPENAI_API_KEY.startsWith("sk-your")
-  ) {
-    appendMessage(
-      "ai",
-      `<div class="section">⚠️ OPENAI_API_KEY not set. Add your key to <code>secrets.js</code> and do NOT commit it to a public repo.</div>`
-    );
-    return;
-  }
-
-  // Add typing indicator (animated dots)
-  const typingEl = document.createElement("div");
-  typingEl.className = "msg ai typing";
-  typingEl.innerHTML = `<div class="dots"><span class="dot"></span><span class="dot"></span><span class="dot"></span></div>`;
-  chatWindow.appendChild(typingEl);
-  chatWindow.scrollTop = chatWindow.scrollHeight;
-
   try {
     // Build messages array for the API; system message sets the L'Oréal persona and scope
     const messages = [
@@ -80,37 +63,16 @@ chatForm.addEventListener("submit", async (e) => {
       { role: "user", content: userText },
     ];
 
-    // If you deploy a Cloudflare Worker, set its URL here so the client posts to the worker.
-    const CLOUD_WORKER_URL = "https://lorealchatbot.jalopezo.workers.dev/";
-
-    let res;
-    if (CLOUD_WORKER_URL) {
-      // Send messages array to your worker; worker should forward to OpenAI using its secret key
-      res = await fetch(CLOUD_WORKER_URL, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          messages: messages,
-          temperature: 0.8,
-          max_completion_tokens: 300,
-        }),
-      });
-    } else {
-      // Fallback: call OpenAI directly (requires OPENAI_API_KEY in secrets.js)
-      res = await fetch("https://api.openai.com/v1/chat/completions", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${OPENAI_API_KEY}`,
-        },
-        body: JSON.stringify({
-          model: "gpt-4o",
-          messages: messages,
-          temperature: 0.8,
-          max_completion_tokens: 300,
-        }),
-      });
-    }
+    // Always POST to the Cloudflare Worker (it should forward to OpenAI using the server-side key)
+    const res = await fetch(CLOUD_WORKER_URL, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        messages: messages,
+        temperature: 0.8,
+        max_completion_tokens: 300,
+      }),
+    });
 
     const data = await res.json();
 
