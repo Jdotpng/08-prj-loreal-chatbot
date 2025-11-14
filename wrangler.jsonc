@@ -1,9 +1,0 @@
-name = "beautygenius-worker"
-compatibility_date = "2025-11-14"
-main = "cloudflare-worker.js"
-
-# Optional: uncomment and set account_id, route, or env-specific settings if needed.
-# account_id = "your-account-id"
-# workers_dev = true
-# route = "example.com/*"
-# zone_id = "your-zone-id"

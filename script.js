@@ -80,30 +80,55 @@ chatForm.addEventListener("submit", async (e) => {
       { role: "user", content: userText },
     ];
 
-    // Call OpenAI Chat Completions API using fetch with async/await
-    // Beginner-friendly: no libraries, just fetch
-    const res = await fetch("https://api.openai.com/v1/chat/completions", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${OPENAI_API_KEY}`,
-      },
-      body: JSON.stringify({
-        model: "gpt-4o", // workspace instruction: use gpt-4o by default
-        messages: messages,
-        // Make the assistant slightly more creative and cap the response length:
-        temperature: 0.8,
-        max_completion_tokens: 300,
-        // Optional: other params like top_p can be added if needed
-      }),
-    });
+    // If you deploy a Cloudflare Worker, set window.CLOUDFLARE_WORKER_URL = "https://<your-worker>.workers.dev"
+    // (e.g. via secrets.js or an inline script). If not set, the client will call OpenAI directly.
+    const CLOUD_WORKER_URL = window.CLOUDFLARE_WORKER_URL || null;
+    let res;
+    if (CLOUD_WORKER_URL) {
+      // Send messages array to your worker; worker should forward to OpenAI using its secret key
+      res = await fetch(CLOUD_WORKER_URL, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          messages: messages,
+          temperature: 0.8,
+          max_completion_tokens: 300,
+        }),
+      });
+    } else {
+      // Fallback: call OpenAI directly (requires OPENAI_API_KEY in secrets.js)
+      res = await fetch("https://api.openai.com/v1/chat/completions", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${OPENAI_API_KEY}`,
+        },
+        body: JSON.stringify({
+          model: "gpt-4o",
+          messages: messages,
+          temperature: 0.8,
+          max_completion_tokens: 300,
+        }),
+      });
+    }
 
     const data = await res.json();
+
+    // Handle non-OK responses from worker or OpenAI
+    if (!res.ok) {
+      typingEl.remove();
+      const errMsg = data?.error?.message || JSON.stringify(data);
+      appendMessage(
+        "ai",
+        `<div class="section">Error: ${escapeHtml(errMsg)}</div>`
+      );
+      return;
+    }
 
     // Remove typing indicator
     typingEl.remove();
 
-    // Extract assistant text (beginner-friendly path used in this workspace)
+    // Extract assistant text (data.choices[0].message.content)
     const assistantText =
       data?.choices?.[0]?.message?.content ?? "Sorry, I didn't get a reply.";
 
