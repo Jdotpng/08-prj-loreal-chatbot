@@ -1,4 +1,4 @@
-name = "loreal-chatbot-worker"
+name = "lorealchatbot"
 compatibility_date = "2025-11-14"
 main = "RESOURCE_cloudflare-worker.js"
 
