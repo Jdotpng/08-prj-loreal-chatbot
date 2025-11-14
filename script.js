@@ -80,9 +80,9 @@ chatForm.addEventListener("submit", async (e) => {
       { role: "user", content: userText },
     ];
 
-    // If you deploy a Cloudflare Worker, set window.CLOUDFLARE_WORKER_URL = "https://<your-worker>.workers.dev"
-    // (e.g. via secrets.js or an inline script). If not set, the client will call OpenAI directly.
-    const CLOUD_WORKER_URL = window.CLOUDFLARE_WORKER_URL || null;
+    // If you deploy a Cloudflare Worker, set its URL here so the client posts to the worker.
+    const CLOUD_WORKER_URL = "https://lorealchatbot.jalopezo.workers.dev/";
+
     let res;
     if (CLOUD_WORKER_URL) {
       // Send messages array to your worker; worker should forward to OpenAI using its secret key
