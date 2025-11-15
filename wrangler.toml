@@ -1,6 +1,6 @@
 name = "lorealchatbot"
 compatibility_date = "2025-11-14"
-main = "RESOURCE_cloudflare-worker.js"
+main = "./RESOURCE_cloudflare-worker.js" # Ensure the relative path is correct
 
 # Uncomment and set account_id if deploying to a specific Cloudflare account
 # account_id = "your-cloudflare-account-id"
@@ -10,7 +10,7 @@ main = "RESOURCE_cloudflare-worker.js"
 # zone_id = "your-zone-id"
 
 # Specify the directory for static assets
-assets = { directory = "./dist" }
+assets = { directory = "./dist" } # Ensure the directory exists and contains files
 
 [observability]
 enabled = false
