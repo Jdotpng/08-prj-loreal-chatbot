@@ -8,6 +8,3 @@ main = "RESOURCE_cloudflare-worker.js"
 # Uncomment if you want to deploy to a specific route
 # route = "https://lorealchatbot.jalopezo.workers.dev/"
 # zone_id = "your-zone-id"
-
-# Uncomment if you want to deploy assets (e.g., static files)
- assets = { directory = "./dist" }
