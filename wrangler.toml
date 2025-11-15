@@ -1,5 +1,5 @@
 name = "lorealchatbot"
-compatibility_date = "2025-11-14"
+compatibility_date = "2025-11-15"
 main = "./RESOURCE_cloudflare-worker.js" # Ensure the relative path is correct
 
 # Uncomment and set account_id if deploying to a specific Cloudflare account
