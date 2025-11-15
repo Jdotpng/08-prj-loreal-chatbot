@@ -9,8 +9,9 @@ main = "RESOURCE_cloudflare-worker.js"
 # route = "https://lorealchatbot.jalopezo.workers.dev/"
 # zone_id = "your-zone-id"
 
-# Uncomment if you want to deploy assets (e.g., static files)
-# assets = { directory = "./dist" }
+# Specify the directory for static assets
+assets = { directory = "./dist" }
+
 [observability]
 enabled = false
 head_sampling_rate = 1
