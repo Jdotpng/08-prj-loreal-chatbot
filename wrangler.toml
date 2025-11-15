@@ -1,6 +1,6 @@
 name = "lorealchatbot"
-compatibility_date = "2025-11-15"
-main = "./RESOURCE_cloudflare-worker.js" # Ensure the relative path is correct
+compatibility_date = "2025-11-14"
+main = "RESOURCE_cloudflare-worker.js"
 
 # Uncomment and set account_id if deploying to a specific Cloudflare account
 # account_id = "your-cloudflare-account-id"
@@ -9,20 +9,5 @@ main = "./RESOURCE_cloudflare-worker.js" # Ensure the relative path is correct
 # route = "https://lorealchatbot.jalopezo.workers.dev/"
 # zone_id = "your-zone-id"
 
-# Specify the directory for static assets
-assets = { directory = "./dist" } # Ensure the directory exists and contains files
-
-[observability]
-enabled = false
-head_sampling_rate = 1
-
-[observability.logs]
-enabled = true
-head_sampling_rate = 1
-persist = true
-invocation_logs = true
-
-[observability.traces]
-enabled = false
-persist = true
-head_sampling_rate = 1
+# Uncomment if you want to deploy assets (e.g., static files)
+# assets = { directory = "./dist" }
